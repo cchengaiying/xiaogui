@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin:0px;
+			padding:0px;
+			list-style:none;
+		}
+		.box{
+			width:100%;
+			height:700px;
+			text-align: center;
+			line-height: 700px;
+		}
+		.box1{
+			background:url('images/2.jpg');
+		}
+		.box2{
+			background:url('images/3.jpg');
+		}
+		.box3{
+			background:url('images/4.jpg');
+		}
+		.box4{
+			background:url('images/5.jpg');
+		}
+		.slider{
+			position:fixed;
+			right:50px;
+			top:40%;
+		}
+		.slider li{
+			width:16px;
+			height: 16px;
+			padding-top:10px;
+			cursor:pointer;
+		}
+		.slider span{
+			display: block;
+			width:4px;
+			height:4px;
+			background: #777;
+			border-radius: 20px;
+			margin:0px auto;
+		}
+		.cur{
+			width:8px;
+			height: 8px;
+			border:1px solid #777;
+			background: rgba()
+		}
+		h3{
+			font-size: 40px;
+			font-family:'楷体';
+			text-shadow: 0 0 5px #ccc;
+			color:#333;
+		}
+		.top{
+			width:100%;
+			height: 50px;
+			position:fixed;
+			background:rgba(0,0,0,0.6)
+		}
+		.top p{
+			display: inline-block;
+		}
+		.top p a{
+		color: #fff;
+    text-decoration: none;
+    padding: 0px 15px;
+    line-height: 50px;
+		}
+		.top p:hover{
+			background: red;
+		}
+		#pic{
+			width:100px;
+			height: 100px;
+			position:fixed;
+			left:50px;
+			top:50px;
+		}
+		#pic img{
+			width:100px;
+			height: 100px;                                                                                                     
+		}
+	</style>
+</head>
+<body>
+	<div class="slider">
+		<li>
+			<span class="cur"></span>
+		</li>
+		<li>
+			<span></span>
+		</li>
+		<li>
+			<span></span>
+		</li>
+		<li>
+			<span></span>
+		</li>
+	</div>
+	<div class="top">
+		<p><a href="#qi">启</a></p>
+		<p><a href="#chen">沉</a></p>
+		<p><a href="#li">离</a></p>
+		<p><a href="#zhui">追</a></p>
+	</div>
+	<div id="pic"><img src="images/1.jpg"></div>
+	<div class="box1 box" id="qi"><h3>何必诗债换酒钱</h3></div>
+	<div class="box2 box" id="chen"></a><h3>要我美艳，还要我杀人不眨眼</h3></div>
+	<div class="box3 box" id="li"><h3>我可以忘记你，不怕想起 才算是胜利</h3></div>
+	<div class="box4 box" id="zhui"><h3>红色属于高跟鞋，属于枫叶</h3></div>
+	<script src="js/jquery-1.11.1.js"></script>
+	<script>
+		$(function(){
+			//获取body或者html元素
+			var body=$('html,body');
+			//获取li标签
+			var btn=$('.slider li');
+			//获取box
+			var box=$('.box');
+			//定义一个变量，保存上次滚动到第几个box
+			var index=0;
+			//隐藏页面的滚动条，初始化页面位置为顶部
+			body.css('overflow','hidden').scrollTop(0);
+			//给每一个li绑定事件
+			btn.click(function(){
+				//为每一个li给一个编号
+				var btnindex=$(this).index();
+				//取得box的top值
+				var boxtop=box.eq(btnindex).offset().top;
+				//如果目前在跳转状态，先不跳转
+				//is()  判断是否在当前状态   :checked   :animated
+				//如果当前在播放动画，true
+				var isanimate=body.is(':animated');
+				//当前屏幕的div和点击的div之间的差值
+				var m=btnindex-index;
+				//如果m=0或者正在播放动画
+				console.log(boxtop);
+				if(m!=0&&!isanimate){
+					//如果m=1或者m=-1
+					if(m==1||m==-1){
+						body.animate({'scrollTop':boxtop},1000);
+					}else{
+						//淡出
+						body.fadeOut(400);
+						setTimeout(function(){
+							//如果body淡出了，相当于，body整个隐藏了
+							body.fadeIn(400).scrollTop(boxtop);
+						},400);
+					}
+					//改变右侧的焦点
+					$('span',btn).removeClass('cur');
+					$('span',$(this)).addClass('cur');
+					index=btnindex;
+				}
+			});
+		//处理滚轮事件
+		var mousewheel=function(e){
+			//处理兼容性
+			if(!e){
+				e=window.event;
+			}
+			//为了保存滚动值的变量
+			var delta=0;
+			//取得box的top值
+			var boxtop=box.eq(index).offset().top;
+			var isanimate=body.is(':animated');
+
+			//取滚轮的值
+			if(e.wheelDelta){
+				//兼容chrome
+				delta=e.wheelDelta/120;
+				//兼容opera浏览器，欧朋浏览器的window对象中有一个opera对象
+				if(window.opera){
+					delta=-delta;
+				}
+			}else if(e.detail){//兼容FF
+				delta=-e.detail/3;
+			}
+			//判断滚轮向上还是向下
+			if(delta>0){
+				if(index!=0){
+					if(!isanimate){
+						body.animate({'scrollTop':boxtop-700},1000);
+						index--;
+					}
+				}
+			}else{
+				if(index!=4){
+					if(!isanimate){
+						body.animate({'scrollTop':boxtop+700},1000);
+						index++;
+					}
+				}
+			}
+			//改变右侧的点
+			$('span',btn).removeClass('cur').eq(index).addClass('cur');
+		}
+		//绑定滚轮事件
+		window.onmousewheel=document.onmousewheel=mousewheel;
+			
+		})
+	</script>
+</body>
+</html>
